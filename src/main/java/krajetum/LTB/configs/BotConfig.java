@@ -5,12 +5,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+
+/**
+ *  @since 1.0
+ *  This class is the holder of all configuration related to the bot
+ *
+ * */
 public class BotConfig {
 
     public static String BOT_TOKEN;
     public static String BOT_USERNAME;
     public static long BOT_LUG_GROUP_ID;
-
+    
     static{
         Properties properties = new Properties();
         try {

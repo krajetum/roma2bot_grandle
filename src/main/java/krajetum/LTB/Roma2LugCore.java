@@ -1,6 +1,24 @@
 package krajetum.LTB;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import krajetum.LTB.objects.LUGMember;
+import krajetum.LTB.objects.SpamCommand;
+import org.mortbay.log.Log;
+import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
+import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableTextMessage;
+import pro.zackpollard.telegrambot.api.event.Listener;
+import pro.zackpollard.telegrambot.api.event.chat.CallbackQueryReceivedEvent;
+import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
+import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardButton;
+import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardMarkup;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,31 +29,25 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import krajetum.LTB.objects.LUGMember;
-import krajetum.LTB.objects.SpamCommand;
-import org.mortbay.log.Log;
-import pro.zackpollard.telegrambot.api.TelegramBot;
-import pro.zackpollard.telegrambot.api.chat.message.ReplyMarkupType;
-import pro.zackpollard.telegrambot.api.chat.message.send.*;
-
-import pro.zackpollard.telegrambot.api.event.Listener;
-import pro.zackpollard.telegrambot.api.event.chat.CallbackQueryReceivedEvent;
-import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
-import pro.zackpollard.telegrambot.api.event.chat.inline.InlineCallbackQueryReceivedEvent;
-import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
-import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardButton;
-import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardMarkup;
-import pro.zackpollard.telegrambot.api.keyboards.Keyboard;
-
+/**
+ *  Class used to interact with the bot
+ *
+ *  @version 2.0
+ *  @since 1.0
+ * */
 
 public class Roma2LugCore implements Listener {
 
     private HashMap<String, String> spam_commands;
     private List<SpamCommand> commandList;
     private final TelegramBot telegramBot;
+
+    /**
+     *  Constructor that fetch the spam_commands.json
+     *  @param telegramBot pro.zackpollard.telegrambot.api.TelegramBot
+     *
+     *  @since 1.0
+     * */
 
     public Roma2LugCore(TelegramBot telegramBot) {
 

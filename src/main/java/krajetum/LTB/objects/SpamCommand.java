@@ -1,7 +1,11 @@
 package krajetum.LTB.objects;
 
 /**
- * Created by Lorenzo on 21/11/2016.
+ *
+ * This class is used to fetch the spam_commands.json file
+ *
+ *
+ * @since 1.0
  */
 public class SpamCommand {
 

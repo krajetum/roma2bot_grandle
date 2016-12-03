@@ -1,7 +1,11 @@
 package krajetum.LTB.objects;
 
 /**
- * Created by Lorenzo on 18/11/2016.
+ *
+ *  This class is used to parse the lug_member.json file in order to get the members of the group
+ *
+ *  @version 1.0
+ *  @since 1.0
  */
 public class LUGMember {
 
