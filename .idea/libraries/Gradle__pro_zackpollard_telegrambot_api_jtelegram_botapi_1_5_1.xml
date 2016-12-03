@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: pro.zackpollard.telegrambot.api:jtelegram-botapi:1.5.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pro.zackpollard.telegrambot.api/jtelegram-botapi/1.5.1/d8f2dc88f84dfac39a438614496fce552b930fc7/jtelegram-botapi-1.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pro.zackpollard.telegrambot.api/jtelegram-botapi/1.5.1/74a7dc668537d065deb63a7cf135653a39f8795e/jtelegram-botapi-1.5.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

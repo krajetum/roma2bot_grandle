@@ -1,0 +1,45 @@
+import org.gradle.plugins.ide.idea.model.*
+
+group 'krajetum'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+idea {
+    project {
+        //if you want to set specific jdk and language level
+        jdkName = '1.6'
+        languageLevel = '1.5'
+
+        //you can update the source wildcards
+        wildcards += '!?*.ruby'
+
+        //you can configure the VCS used by the project
+        vcs = 'Git'
+
+        //you can change the modules of the *.ipr
+        //modules = project(':someProject').idea.module
+
+        //you can change the output file
+        outputFile = new File(outputFile.parentFile, 'roma2bot-out.ipr')
+    }
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    // https://mvnrepository.com/artifact/pro.zackpollard.telegrambot.api/jtelegram-botapi
+    compile group: 'pro.zackpollard.telegrambot.api', name: 'jtelegram-botapi', version: '1.5.1'
+    compile group: 'com.google.api-client', name: 'google-api-client', version:'1.22.0'
+    compile group: 'com.google.oauth-client', name:'google-oauth-client-jetty', version:'1.22.0'
+    compile group: 'com.google.apis', name:'google-api-services-gmail', version:'v1-rev50-1.22.0'
+    compile group: 'com.google.apis', name:'google-api-services-calendar', version:'v3-rev225-1.22.0'
+    compile group: 'com.google.code.gson', name:'gson', version:'2.8.0'
+
+}
