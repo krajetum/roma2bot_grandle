@@ -1,11 +1,11 @@
 import org.gradle.plugins.ide.idea.model.*
 
 group 'krajetum'
-version '1.0-SNAPSHOT'
+version '2.0'
 
 apply plugin: 'java'
 apply plugin: 'idea'
-
+apply plugin: 'distribution'
 idea {
     project {
         //if you want to set specific jdk and language level
@@ -32,9 +32,67 @@ repositories {
     mavenCentral()
 }
 
+
+
+
+
+task(krajetum_assembly){
+    dependsOn tasks.withType(Jar)
+
+    doLast{
+        file('build/package').mkdirs()
+        copy {
+            from 'build/libs'
+            into 'build/package'
+        }
+        file('build/package/data').mkdirs()
+        file('build/package/config').mkdirs()
+        file('build/package/stickers').mkdirs()
+        file('build/package/tmp').mkdirs()
+        copy {
+            from 'data/spam_commands.json'
+            from 'data/lug_members.json'
+            into 'build/package/data/'
+        }
+        copy {
+            from 'config/client_id.json'
+            from 'config/properties.properties'
+            into 'build/package/config/'
+        }
+        copy{
+            from 'stickers/'
+            into 'build/package/stickers'
+        }
+    }
+}
+task(krajetum_zip, type: Zip){
+    doFirst{
+        from 'build/package'
+        archiveName project.name+"-"+project.version+'.zip'
+        into 'build/'
+    }
+}
+clean{
+    println "cleaning jar"
+    File jar_bot = new File("build/package/"+project.name+"-"+project.version+".jar")
+    if (jar_bot.exists())jar_bot.delete()
+}
+
+jar{
+    manifest {
+        attributes("Implementation-Title": "Gradle",
+                    "Implementation-Version": version,
+                    "Main-Class": "krajetum.LTB.LUGTB",
+                    "Manifest-Version": "1.0",
+        )
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    // https://mvnrepository.com/artifact/pro.zackpollard.telegrambot.api/jtelegram-botapi
+    //testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'pro.zackpollard.telegrambot.api', name: 'jtelegram-botapi', version: '1.5.1'
     compile group: 'com.google.api-client', name: 'google-api-client', version:'1.22.0'
     compile group: 'com.google.oauth-client', name:'google-oauth-client-jetty', version:'1.22.0'

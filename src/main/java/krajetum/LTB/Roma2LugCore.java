@@ -1,6 +1,23 @@
 package krajetum.LTB;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import krajetum.LTB.messagebuilder.Message;
+import krajetum.LTB.objects.LUGMember;
+import krajetum.LTB.objects.SpamCommand;
+import org.mortbay.log.Log;
+import pro.zackpollard.telegrambot.api.TelegramBot;
+import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
+import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
+import pro.zackpollard.telegrambot.api.chat.message.send.SendableTextMessage;
+import pro.zackpollard.telegrambot.api.event.Listener;
+import pro.zackpollard.telegrambot.api.event.chat.CallbackQueryReceivedEvent;
+import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
+import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,34 +25,17 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import krajetum.LTB.objects.LUGMember;
-import krajetum.LTB.objects.SpamCommand;
-import org.mortbay.log.Log;
-import pro.zackpollard.telegrambot.api.TelegramBot;
-import pro.zackpollard.telegrambot.api.chat.message.ReplyMarkupType;
-import pro.zackpollard.telegrambot.api.chat.message.send.*;
 
-import pro.zackpollard.telegrambot.api.event.Listener;
-import pro.zackpollard.telegrambot.api.event.chat.CallbackQueryReceivedEvent;
-import pro.zackpollard.telegrambot.api.event.chat.ParticipantJoinGroupChatEvent;
-import pro.zackpollard.telegrambot.api.event.chat.inline.InlineCallbackQueryReceivedEvent;
-import pro.zackpollard.telegrambot.api.event.chat.message.CommandMessageReceivedEvent;
-import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardButton;
-import pro.zackpollard.telegrambot.api.keyboards.InlineKeyboardMarkup;
-import pro.zackpollard.telegrambot.api.keyboards.Keyboard;
-
-
+@SuppressWarnings("ALL")
 public class Roma2LugCore implements Listener {
 
     private HashMap<String, String> spam_commands;
     private List<SpamCommand> commandList;
     private final TelegramBot telegramBot;
+
+    private HashMap<String, Message.Builder> spam_commands_unsafe;
 
     public Roma2LugCore(TelegramBot telegramBot) {
 
@@ -50,7 +50,8 @@ public class Roma2LugCore implements Listener {
             Log.info("INIT SPAM COMMANDS");
             for(SpamCommand command:commandList){
                 Log.info("Command "+command.getCommand()+" initialized");
-                spam_commands.put(command.getCommand(), System.getProperty("user.dir") +"/stickers/"+ command.getFilepath());
+                spam_commands.put(command.getCommand(), System.getProperty("user.dir") + "/stickers/" + command.getFilepath());
+               // spam_commands_unsafe.put(command.getCommand(), new Message.Builder());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -75,10 +76,10 @@ public class Roma2LugCore implements Listener {
     @Override
     public void onCommandMessageReceived(CommandMessageReceivedEvent event) {
         if(spam_commands.containsKey(event.getCommand())){
-
-            SendableStickerMessage message = SendableStickerMessage.builder().sticker(new InputFile(new File(spam_commands.get(event.getCommand())))).build();
-            event.getChat().sendMessage(message);
-
+            Message.Builder message = spam_commands_unsafe.get(event.getCommand());
+            Message.Builder.SMessageBuilder messageBuilder = message.toStickerMessage().path(event.getCommand());
+            //SendableStickerMessage message = SendableStickerMessage.builder().sticker(new InputFile(new File(spam_commands.get(event.getCommand())))).build();
+            event.getChat().sendMessage(messageBuilder.build());
         }else if(event.getCommand().equals("whoami")){
             SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message("Name: *" + event.getMessage().getSender().getFullName() + "*").parseMode(ParseMode.MARKDOWN).build();
             event.getChat().sendMessage(sendableTextMessage);
@@ -89,6 +90,7 @@ public class Roma2LugCore implements Listener {
             File file = new File(System.getProperty("user.dir")+"/stickers/quarantennitristi");
             //noinspection ConstantConditions
             int rand = ThreadLocalRandom.current().nextInt(0, file.listFiles().length);
+            //noinspection ConstantConditions
             SendableStickerMessage stickerMessage = SendableStickerMessage.builder().sticker(new InputFile(file.listFiles()[rand])).build();
             event.getChat().sendMessage(stickerMessage);
         }else if(event.getCommand().equals("chatid")){
@@ -109,8 +111,9 @@ public class Roma2LugCore implements Listener {
                     SendableTextMessage sendableTextMessage = SendableTextMessage.builder().message(builder.toString()).build();
                     event.getChat().sendMessage(sendableTextMessage);
                 }
+
             }catch (NumberFormatException e){
-                System.out.println("Questo è flavio che fa lo stronzo xD");
+                System.out.println("Questo ï¿½ flavio che fa lo stronzo xD");
             }
         }else if(event.getCommand().equals("list")){
             StringBuilder builder = new StringBuilder();
@@ -148,9 +151,13 @@ public class Roma2LugCore implements Listener {
             SendableTextMessage message = SendableTextMessage.builder().message("Get this project on: https://krajetum.github.io/roma2lug_bot/").parseMode(ParseMode.HTML).build();
             event.getChat().sendMessage(message);
         }else if(event.getCommand().equals("test")){
-            InlineKeyboardMarkup markup =  InlineKeyboardMarkup.builder().addRow(InlineKeyboardButton.builder().text("text").url("https://www.google.com").callbackData(UUID.randomUUID().toString()).build()).build();
-            SendableTextMessage textMessage = SendableTextMessage.builder().replyMarkup(markup).message("TEST KEYBOARD").build();
-            event.getChat().sendMessage(textMessage);
+            Message.Builder messageBuilder = new Message.Builder();
+            Message.Builder.TMessageBuilder message = new Message.Builder.TMessageBuilder().runnable(objects -> {
+                return objects.get(0).toString();
+            });
+            ArrayList<Object> arrayList = new ArrayList<Object>();
+            arrayList.add("Hello this is the new interface for messages");
+            event.getChat().sendMessage(message.buildWithRunnable(arrayList));
         }
     }
 
