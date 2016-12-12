@@ -1,11 +1,14 @@
 package krajetum.LTB.messagebuilder;
 
 import com.sun.istack.internal.NotNull;
+import krajetum.LTB.commander.utility.CommandDummy;
+import pro.zackpollard.telegrambot.api.chat.Chat;
 import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
 import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableTextMessage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -13,9 +16,7 @@ public class Message {
 
     public Message(){}
 
-
-
-    public static class SMessageBuilder extends Message {
+    public static class SMessageBuilder extends Message implements CommandDummy{
 
         @NotNull
         String _filepath;
@@ -40,15 +41,23 @@ public class Message {
             }else{
                 result = "404.jpg";
             }
-            return SendableStickerMessage.builder().sticker(new InputFile(System.getProperty("user.id")+"/stickers/"+result)).build();
+            return SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir") + "/stickers/"+result))).build();
         }
 
         public SendableStickerMessage build() {
-            return SendableStickerMessage.builder().sticker(new InputFile(System.getProperty("user.id")+"/stickers/"+_filepath)).build();
+            return SendableStickerMessage.builder().sticker(new InputFile(new File(System.getProperty("user.dir") + "/stickers/"+_filepath))).build();
+        }
+
+        @Override
+        public void execute(Chat chat, ArrayList<Object> objects) {
+            if(_callable==null)
+                chat.sendMessage(this.build());
+            else
+                chat.sendMessage(this.buildWithRunnable(objects));
         }
     }
 
-    public static class TMessageBuilder extends Message {
+    public static class TMessageBuilder extends Message implements CommandDummy{
 
         StringBuilder _textBuilder;
         ParseMode _parseMode;
@@ -84,6 +93,17 @@ public class Message {
             if(_parseMode==null)_parseMode=ParseMode.NONE;
             return SendableTextMessage.builder().message(_textBuilder.toString()).parseMode(_parseMode).build();
         }
+
+        @Override
+        public void execute(Chat chat, ArrayList<Object> objects) {
+            if(_callable==null)
+                chat.sendMessage(this.build());
+            else
+                chat.sendMessage(this.buildWithRunnable(objects));
+        }
     }
+
+
+
 }
 

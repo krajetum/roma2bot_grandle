@@ -1,7 +1,5 @@
-import org.gradle.plugins.ide.idea.model.*
-
 group 'krajetum'
-version '2.0'
+version '3.0'
 
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -10,7 +8,7 @@ idea {
     project {
         //if you want to set specific jdk and language level
         jdkName = '1.6'
-        languageLevel = '1.5'
+        languageLevel = '1.8'
 
         //you can update the source wildcards
         wildcards += '!?*.ruby'
@@ -99,5 +97,5 @@ dependencies {
     compile group: 'com.google.apis', name:'google-api-services-gmail', version:'v1-rev50-1.22.0'
     compile group: 'com.google.apis', name:'google-api-services-calendar', version:'v3-rev225-1.22.0'
     compile group: 'com.google.code.gson', name:'gson', version:'2.8.0'
-
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
 }
