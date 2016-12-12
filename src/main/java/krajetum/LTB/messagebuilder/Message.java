@@ -1,6 +1,6 @@
 package krajetum.LTB.messagebuilder;
 
-import com.sun.istack.internal.NotNull;
+
 import krajetum.LTB.commander.utility.CommandDummy;
 import pro.zackpollard.telegrambot.api.chat.Chat;
 import pro.zackpollard.telegrambot.api.chat.message.send.InputFile;
@@ -18,13 +18,13 @@ public class Message {
 
     public static class SMessageBuilder extends Message implements CommandDummy{
 
-        @NotNull
+
         String _filepath;
         Function<ArrayList<Object>,String> _callable;
 
         public SMessageBuilder(){}
 
-        public SMessageBuilder path(@NotNull String path) {
+        public SMessageBuilder path(String path) {
             _filepath = path;
             return this;
         }

@@ -1,6 +1,6 @@
 package krajetum.LTB.commander;
 
-import com.sun.istack.internal.Nullable;
+
 import krajetum.LTB.commander.utility.LambdaCommand;
 import krajetum.LTB.messagebuilder.Message;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,7 +24,7 @@ public class Commander{
         commandMap.put(name, Pair.of(lambdaCommand.lambda(), type));
     }
 
-    public void execute(String name, Chat chat, @Nullable ArrayList<Object> arrayList){
+    public void execute(String name, Chat chat,ArrayList<Object> arrayList){
         if(commandMap.containsKey(name)){
             Pair<Object, Class<?>> pair = commandMap.get(name);
             if(pair.getValue()== Message.TMessageBuilder.class) {
