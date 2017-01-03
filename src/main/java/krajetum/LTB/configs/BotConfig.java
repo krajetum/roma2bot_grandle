@@ -10,6 +10,7 @@ public class BotConfig {
     public static String BOT_TOKEN;
     public static String BOT_USERNAME;
     public static long BOT_LUG_GROUP_ID;
+    public static int WAIT_TIME;
 
     static{
         Properties properties = new Properties();
@@ -18,6 +19,7 @@ public class BotConfig {
             BOT_TOKEN = properties.getProperty("TOKEN");
             BOT_LUG_GROUP_ID = Long.parseLong(properties.getProperty("LUG_ID"));
             BOT_USERNAME = properties.getProperty("USERNAME");
+            WAIT_TIME = Integer.parseInt(properties.getProperty("WAIT_TIME"));
         } catch (IOException e) {
             e.printStackTrace();
         }

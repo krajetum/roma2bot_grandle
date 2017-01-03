@@ -5,7 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import krajetum.LTB.commander.Commander;
-import krajetum.LTB.messagebuilder.Message;
+import krajetum.LTB.messagebuilder.AMessageBuilder;
+import krajetum.LTB.messagebuilder.SMessageBuilder;
+import krajetum.LTB.messagebuilder.TMessageBuilder;
 import krajetum.LTB.objects.LUGMember;
 import krajetum.LTB.objects.SpamCommand;
 import org.mortbay.log.Log;
@@ -52,34 +54,49 @@ public class Roma2LugCore implements Listener {
             Log.info("INIT SPAM COMMANDS");
             for(SpamCommand command:commandList){
                 Log.info("Command "+command.getCommand()+" initialized");
-                commander.register(command.getCommand(),() -> new Message.SMessageBuilder().path(command.getFilepath()), Message.SMessageBuilder.class);
+                commander.register(command.getCommand(),() -> new SMessageBuilder().path(command.getFilepath()), SMessageBuilder.class);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        Log.info("FINISHED SPAM COMMANDS");
+        file = new File(System.getProperty("user.dir")+"/data/audio_commands.json");
+        try{
+            Type type = new TypeToken<List<SpamCommand>>(){}.getType();
+            commandList = gson.fromJson(new FileReader(file), type);
+            Log.info("INIT AUDIO COMMANDS");
+            for(SpamCommand command:commandList){
+                Log.info("Command "+command.getCommand()+" initialized");
+                commander.register(command.getCommand(),() -> new AMessageBuilder().path(command.getFilepath()), AMessageBuilder.class);
+            }
+        }catch (FileNotFoundException ex){
+            ex.printStackTrace();
+        }
+        Log.info("FINISHED AUDIO COMMANDS");
+
         register();
     }
 
     public void register(){
         commander.register("whoami", ()->{
-            Message.TMessageBuilder builder = new Message.TMessageBuilder();
+            TMessageBuilder builder = new TMessageBuilder();
             builder.runnable(objects -> {
                CommandMessageReceivedEvent event = ((CommandMessageReceivedEvent) objects.get(0));
                return  "Name: *" + event.getMessage().getSender().getFullName() + "*";
             });
             builder.parseMode(ParseMode.MARKDOWN);
             return builder;
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
         commander.register("k", ()->{
-            Message.TMessageBuilder builder = new Message.TMessageBuilder();
+            TMessageBuilder builder = new TMessageBuilder();
             builder.runnable(objects -> {
                 return  "K";
             });
             builder.parseMode(ParseMode.MARKDOWN);
             return builder;
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
         commander.register("quarantennetriste", ()->{
-            Message.SMessageBuilder builder = new Message.SMessageBuilder();
+            SMessageBuilder builder = new SMessageBuilder();
             builder.runnable(objects -> {
                 CommandMessageReceivedEvent event = ((CommandMessageReceivedEvent) objects.get(0));
                 File file = new File(System.getProperty("user.dir")+"/stickers/quarantennitristi");
@@ -89,20 +106,20 @@ public class Roma2LugCore implements Listener {
                 return "quarantennitristi/"+file.listFiles()[rand].getName();
             });
             return builder;
-        }, Message.SMessageBuilder.class);
+        }, SMessageBuilder.class);
 
         commander.register("chatid", ()->{
-            Message.TMessageBuilder builder = new Message.TMessageBuilder();
+            TMessageBuilder builder = new TMessageBuilder();
             builder.runnable(objects -> {
                 CommandMessageReceivedEvent event = ((CommandMessageReceivedEvent) objects.get(0));
                 return  event.getChat().getId();
             });
             builder.parseMode(ParseMode.MARKDOWN);
             return builder;
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
 
         commander.register("kloop", () -> {
-            return new Message.TMessageBuilder().runnable(objects -> {
+            return new TMessageBuilder().runnable(objects -> {
                 CommandMessageReceivedEvent event = (CommandMessageReceivedEvent) objects.get(0);
                 try{
                     String string = event.getArgsString();
@@ -122,10 +139,10 @@ public class Roma2LugCore implements Listener {
                 return "Unexpected Error";
 
             }).parseMode(ParseMode.MARKDOWN);
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
 
         commander.register("cetriolotime", () -> {
-            return new Message.TMessageBuilder().runnable(objects -> {
+            return new TMessageBuilder().runnable(objects -> {
                 CommandMessageReceivedEvent event = (CommandMessageReceivedEvent) objects.get(0);
                 Gson gson = new Gson();
                 try {
@@ -140,19 +157,23 @@ public class Roma2LugCore implements Listener {
                 return "Unexpected Error";
 
             }).parseMode(ParseMode.MARKDOWN);
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
 
         commander.register("about", () -> {
-            return new Message.TMessageBuilder().runnable(objects -> {
-                return "Get this project on: https://krajetum.github.io/roma2lug_bot/";
-            }).parseMode(ParseMode.MARKDOWN);
-        }, Message.TMessageBuilder.class);
+            TMessageBuilder messageBuilder = new TMessageBuilder().append("Get this project on: https://krajetum.github.io/roma2lug_bot/").parseMode(ParseMode.MARKDOWN);
+            return messageBuilder;
+        }, TMessageBuilder.class);
 
         commander.register("list", () -> {
-            return new Message.TMessageBuilder().runnable(objects -> {
+            return new TMessageBuilder().runnable(objects -> {
                 return commander.list();
             }).parseMode(ParseMode.MARKDOWN);
-        }, Message.TMessageBuilder.class);
+        }, TMessageBuilder.class);
+
+        commander.register("huehue", ()->{
+            TMessageBuilder messageBuilder = new TMessageBuilder().append("BrrBrr").parseMode(ParseMode.MARKDOWN);
+            return messageBuilder;
+        }, TMessageBuilder.class);
     }
 
 

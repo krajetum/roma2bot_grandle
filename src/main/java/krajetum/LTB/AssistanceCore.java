@@ -2,7 +2,6 @@ package krajetum.LTB;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils;
-import com.google.api.services.calendar.Calendar;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.*;
 import krajetum.LTB.configs.BotConfig;
@@ -18,6 +17,7 @@ import pro.zackpollard.telegrambot.api.chat.message.send.ParseMode;
 import pro.zackpollard.telegrambot.api.chat.message.send.SendableStickerMessage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -42,14 +42,14 @@ public class AssistanceCore {
     private void checkMail() throws IOException{
         // Build a new authorized API client service.
         Gmail service = GoogleServices.getGmailService();
-        Calendar calendar = GoogleServices.getCalendarService();
+        //Calendar calendar = GoogleServices.getCalendarService();
 
 
         // Print the labels in the user's account.
         //String user = "me";
         ListMessagesResponse response = service.users().messages().list("me").setIncludeSpamTrash(false).setQ("in:unread").execute();
 
-        if(response.getResultSizeEstimate()>0)
+        if(response.getResultSizeEstimate()>0){
             for(Message message : response.getMessages()){
                 Message op = service.users().messages().get("me", message.getId()).setFormat("full").execute();
 
@@ -129,34 +129,40 @@ public class AssistanceCore {
                 //String body = StringUtils.newStringUtf8(Base64.decodeBase64(part.getBody().getData()));
                 //System.out.println(body);
             }
+        }
 
     }
-    public synchronized void runDaemon() {
+    public synchronized void runDaemon(int waitTime) {
         
         boolean once = false;
         //noinspection InfiniteLoopStatement
         while(true) {
             try {
                 checkMail();
-                //60000 1 min
-                //600000 10 min
-                //636000 15 min
+
                 if(!once){
                     Log.info("Daemon Initialization finished");
                     Log.info("Bot Init ended");
                     once = true;
                 }
-                wait(60000);
+
+                wait(waitTime);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }catch (UnknownHostException e ) {
                 Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Host non raggiungible");
             }catch (SocketTimeoutException e){
                 Logger.getLogger(AssistanceCore.class.getName()).log(Level.SEVERE, "Connection Timeout");
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    wait(60000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            } catch (FileNotFoundException e){
                 System.out.println("File client_id.json not found");
                 System.out.println("See the wiki of the project to get some clue");
+            } catch (IOException e) {
+                e.printStackTrace();
                 System.exit(-1);
             }
 

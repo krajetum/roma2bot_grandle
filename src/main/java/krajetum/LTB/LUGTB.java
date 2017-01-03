@@ -8,13 +8,7 @@ import pro.zackpollard.telegrambot.api.TelegramBot;
 public class LUGTB {
 
     public static void main(String argv[]){
-
-
-
-
         TelegramBot telegramBot = TelegramBot.login(BotConfig.BOT_TOKEN);
-
-
 
         Log.info("Telegram Bot Token Exchange Ended");
 
@@ -28,7 +22,7 @@ public class LUGTB {
         Log.info("Core Initialized");
         Log.info("Starting Assistance Daemon");
 
-        assistanceCore.runDaemon();
+        assistanceCore.runDaemon(BotConfig.WAIT_TIME);
         
         
         //noinspection InfiniteLoopStatement
